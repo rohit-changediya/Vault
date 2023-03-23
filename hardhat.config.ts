@@ -30,12 +30,17 @@ const config: HardhatUserConfig = {
     },
     bsc: {
       url: "https://data-seed-prebsc-1-s3.binance.org:8545",
-      chainId: 97,
+      // chainId: 97,
       accounts: [ROPSTEN_PRIVATE_KEY],
-      timeout: 100000000,
+      // timeout: 100000000,
     },
-    eth: {
-      url: `https://eth-goerli.g.alchemy.com/v2/Gspn53eUkWDqUu_1YDKqL1-w162kUA_O`,
+    bsc_main: {
+      url: "https://bsc-dataseed.binance.org",
+      // chainId: 97,
+      accounts: [ROPSTEN_PRIVATE_KEY],
+    },
+    eth_main: {
+      url: `https://eth-mainnet.g.alchemy.com/v2/Gspn53eUkWDqUu_1YDKqL1-w162kUA_O`,
       accounts: [ROPSTEN_PRIVATE_KEY],
     },
     coverage: {

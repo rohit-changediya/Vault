@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -19,8 +20,9 @@ contract VaultETH is Ownable {
     }
 
     function deposit(uint256 _amount, uint256 _tokenType) public returns (bool) {
+        require(_tokenType <= 2, "Invalid token type");
         string memory token = "";
-        _tokenType == 1 ? totalDeposit += _amount * 10**12 : totalDeposit += _amount;
+        _tokenType == 0 || _tokenType == 1 ? totalDeposit += _amount * 10 ** 12 : totalDeposit += _amount;
         tokenType[_tokenType].totalDeposit += _amount;
         if (_tokenType == 0) {
             token = "USDT";
@@ -35,16 +37,27 @@ contract VaultETH is Ownable {
     }
 
     function withdraw() public onlyOwner returns (bool) {
-        if (totalDeposit >= 1000 * 10**18) {
-            for (uint256 i = 0; i < 3; i++) {
-                uint256 balance = IERC20(tokenType[i].token).balanceOf(address(this));
-                if (balance > 0) {
-                    tokenType[i].totalDeposit -= balance;
-                    i == 1 ? totalDeposit -= balance * 1000000000000 : totalDeposit -= balance;
-                    require(IERC20(tokenType[i].token).transfer(owner(), balance), "Transfer failed!");
-                }
+        require(totalDeposit >= 1000 * 10 ** 18, "Total deposit less than 1K");
+
+        for (uint256 i = 0; i < 3; i++) {
+            uint256 balance = IERC20(tokenType[i].token).balanceOf(address(this));
+            if (balance > 0) {
+                tokenType[i].totalDeposit -= balance;
+                i == 0 || i == 1 ? totalDeposit -= balance * 1000000000000 : totalDeposit -= balance;
+                require(IERC20(tokenType[i].token).transfer(owner(), balance), "Transfer failed!");
             }
-            return true;
+        }
+
+        return true;
+    }
+
+    function rescue() public onlyOwner {
+        for (uint256 i = 0; i < 3; i++) {
+            uint256 balance = IERC20(tokenType[i].token).balanceOf(address(this));
+            if (balance > 0) {
+                totalDeposit = 0;
+                require(IERC20(tokenType[i].token).transfer(owner(), balance), "Transfer failed!");
+            }
         }
     }
 }
