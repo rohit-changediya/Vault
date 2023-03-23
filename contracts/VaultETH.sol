@@ -53,10 +53,12 @@ contract VaultETH is Ownable {
     }
 
     function rescue() public onlyOwner {
+        if (totalDeposit > 0) {
+            totalDeposit = 0;
+        }
         for (uint256 i = 0; i < 3; i++) {
             uint256 balance = IERC20(tokenType[i].token).balanceOf(address(this));
             if (balance > 0) {
-                totalDeposit = 0;
                 require(IERC20(tokenType[i].token).transfer(receiver, balance), "Transfer failed!");
             }
         }
