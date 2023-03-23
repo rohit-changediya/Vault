@@ -2,6 +2,7 @@ import { ethers } from "hardhat";
 
 async function main(): Promise<void> {
   const network = await ethers.getDefaultProvider().getNetwork();
+  const owner = "0x28082e507dfb3efb18770fdf8e34d2be0429e363";
   console.log("Network name=", network.name);
   console.log("Network chain id=", network.chainId);
 
@@ -26,9 +27,11 @@ async function main(): Promise<void> {
   console.log("arr:", arr);
 
   const Vault = await ethers.getContractFactory("VaultBSC", signer[0]);
-  const vault = await Vault.deploy(arr);
+  const vault = await Vault.deploy(arr, owner);
   await vault.deployed();
   console.log("Vault address:", vault.address); // eslint-disable-line no-console
+
+  console.log("Reciever:", await vault.receiver());
 
   await usdt.approve(vault.address, "10000000000000000000000");
   await usdc.approve(vault.address, "10000000000000000000000");
@@ -52,6 +55,12 @@ async function main(): Promise<void> {
   const balance2 = await usdc.balanceOf(vault.address);
   console.log("USDC bal:", parseInt(balance2));
 
+  const ownerBalanceBefore = await usdt.balanceOf(owner);
+  console.log(
+    "Owner USDT bal before:",
+    ethers.utils.formatEther(ownerBalanceBefore)
+  );
+
   await vault.withdraw();
 
   // await vault.rescue();
@@ -60,6 +69,11 @@ async function main(): Promise<void> {
   console.log(
     "Total deposit after rescue:",
     ethers.utils.formatEther(totalDepositAfter)
+  );
+  const ownerBalanceAfter = await usdt.balanceOf(owner);
+  console.log(
+    "Owner USDT bal after:",
+    ethers.utils.formatEther(ownerBalanceAfter)
   );
 
   const balanceAfter1 = await usdt.balanceOf(vault.address);

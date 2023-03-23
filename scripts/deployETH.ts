@@ -6,6 +6,7 @@ async function main() {
   const USDT = await ethers.getContractFactory("USDT");
   const USDC = await ethers.getContractFactory("USDT");
   const BUSD = await ethers.getContractFactory("USDT");
+  const owner = "0x28082e507dfb3efb18770fdf8e34d2be0429e363";
 
   const usdt = await USDT.deploy(10000, 6, "USDT", "USDT");
   await usdt.deployed();
@@ -19,7 +20,7 @@ async function main() {
   const arr = [usdt.address, usdc.address, busd.address];
 
   const Vault = await ethers.getContractFactory("VaultETH");
-  const vault = await Vault.deploy(arr);
+  const vault = await Vault.deploy(arr, owner);
   await vault.deployed();
   console.log("Vault address:", vault.address); // eslint-disable-line no-console
 

@@ -6,6 +6,7 @@ async function main(): Promise<void> {
   console.log("Network chain id=", network.chainId);
 
   const signer = await ethers.getSigners();
+  const owner = "0x28082e507dfb3efb18770fdf8e34d2be0429e363";
   const bal = await ethers.provider.getBalance(signer[0].address);
   console.log("bal:", ethers.utils.formatEther(bal));
 
@@ -26,7 +27,7 @@ async function main(): Promise<void> {
   //   );
 
   const Vault = await ethers.getContractFactory("VaultBSC", signer[0]);
-  const vault = await Vault.deploy(arr);
+  const vault = await Vault.deploy(arr, owner);
   await vault.deployed();
   console.log("Vault address:", vault.address); // eslint-disable-line no-console
 }
